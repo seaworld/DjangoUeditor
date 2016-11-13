@@ -19,17 +19,13 @@ def get_path_format_vars():
         "rnd":random.randrange(100,999)
     }
 
-#保存上传的文件
-def save_upload_file(PostFile,FilePath):
+# 保存上传的文件
+def save_upload_file(PostFile, FilePath):
     try:
-        f = open(FilePath, 'wb')
-        for chunk in PostFile.chunks():
-            f.write(chunk)
-    except Exception,E:
-        f.close()
-        return u"写入文件错误:"+ E.message
-    f.close()
-    return u"SUCCESS"
+        new_file_path = default_storage.save(FilePath, PostFile)
+    except Exception, E:
+        return u"写入文件错误:" + E.message
+    return u"SUCCESS", new_file_path
 
 
 @csrf_exempt
@@ -202,7 +198,8 @@ def UploadFile(request):
                 mod = import_module(upload_module_name)
                 state = mod.upload(file, OutputPathFormat)
             else:
-                state = save_upload_file(file, os.path.join(OutputPath, OutputFile))
+                # 保存到文件中，如果保存错误，需要返回ERROR
+                state, OutputPathFormat = save_upload_file(file, OutputPathFormat)
 
     #返回数据
     return_info = {
