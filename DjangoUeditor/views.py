@@ -7,6 +7,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 import datetime,random
 import urllib
+from django.core.files.storage import default_storage
 
 def get_path_format_vars():
     return {
